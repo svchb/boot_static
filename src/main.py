@@ -1,8 +1,10 @@
 import os
 import shutil
+import sys
 from textnode import TextNode, TextType
 from markdown_utils import markdown_to_html_node, extract_title
 
+BASEPATH = sys.argv[1] if len(sys.argv) > 1 else "/"
 
 def copy_directory(src: str, dst: str) -> None:
     """
@@ -32,6 +34,7 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
     title = extract_title(md)
 
     page = tpl.replace("{{ Title }}", title).replace("{{ Content }}", content_html)
+    page = page.replace('href="/', f'href="{BASEPATH}').replace('src="/', f'src="{BASEPATH}')
 
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     with open(dest_path, "w", encoding="utf-8") as f:
@@ -67,7 +70,7 @@ def main():
 
     # Generate static site: copy from 'static' to 'public'
     src_dir = 'static'
-    dst_dir = 'public'
+    dst_dir = 'docs'
     template_path = 'template.html'
 
     # Announce the copy
